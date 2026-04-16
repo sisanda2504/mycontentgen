@@ -9,7 +9,8 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 export default defineConfig({
   tanstack: {
     prerender: {
-      routes: ['/']
+      routes: ['/', '/generator', '/prompt-library', '/pic-mix'],
+      enabled: true
     }
   }
 });
