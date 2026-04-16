@@ -8,8 +8,10 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
   tanstack: {
+    // Disable server-side rendering for static deployment
+    ssr: false,
     prerender: {
-      routes: ['/', '/generator', '/prompt-library', '/pic-mix'],
+      routes: ['/'],
       enabled: true
     }
   }
