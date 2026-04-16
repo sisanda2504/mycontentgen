@@ -183,30 +183,28 @@ export function Generator() {
         {/* Input Area */}
         {mode !== "picmix" && (
           <div className="glass rounded-2xl p-4 space-y-3">
-            {/* Style selector */}
-            <div className="relative">
-              <button
-                onClick={() => setShowStyleDropdown(!showStyleDropdown)}
-                className="flex items-center gap-2 rounded-xl bg-secondary px-4 py-2 text-sm text-secondary-foreground hover:bg-secondary/80 transition-colors"
-              >
-                {currentStyleLabel}
-                <ChevronDown className={`h-4 w-4 transition-transform ${showStyleDropdown ? "rotate-180" : ""}`} />
-              </button>
+            {/* Style selector - dropdown opens upward above the trigger */}
+            <div className="relative inline-block">
               {showStyleDropdown && (
-                <div className="absolute top-full left-0 mt-1 z-20 w-64 max-h-60 overflow-y-auto rounded-xl bg-card border border-border shadow-lg">
-                  {currentStyleOptions.map((opt) => (
+                <div className="absolute bottom-full left-0 mb-1 z-20 w-56 max-h-52 overflow-y-auto rounded-xl bg-card border border-border shadow-lg scrollbar-thin">
+                  {currentStyleOptions.filter(o => o.value !== currentStyle).map((opt) => (
                     <button
                       key={opt.value}
                       onClick={() => { setCurrentStyle(opt.value); setShowStyleDropdown(false); }}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-secondary transition-colors ${
-                        currentStyle === opt.value ? "bg-primary/20 text-primary" : "text-foreground"
-                      }`}
+                      className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-secondary/60 transition-colors"
                     >
-                      {opt.label}
+                      {opt.label.replace(/^[^\s]+\s/, "")}
                     </button>
                   ))}
                 </div>
               )}
+              <button
+                onClick={() => setShowStyleDropdown(!showStyleDropdown)}
+                className="flex items-center gap-2 rounded-xl bg-secondary px-4 py-2.5 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors border border-border/50"
+              >
+                {currentStyleLabel.replace(/^[^\s]+\s/, "")}
+                <ChevronDown className={`h-4 w-4 transition-transform ${showStyleDropdown ? "rotate-180" : ""}`} />
+              </button>
             </div>
             <div className="flex items-start gap-3">
               <div className="flex-1">
