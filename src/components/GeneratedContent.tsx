@@ -10,6 +10,7 @@ interface GeneratedContentProps {
 export function GeneratedContent({ type, content, isStreaming }: GeneratedContentProps) {
   const [copied, setCopied] = useState(false);
   const [caption, setCaption] = useState("");
+  const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   if (!content && !isStreaming) return null;
