@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useAuth } from "./AuthProvider";
 import { AuthModal } from "./AuthModal";
 import { GeneratedContent, LoadingAnimation } from "./GeneratedContent";
@@ -10,7 +10,6 @@ import {
   Sparkles, FileText, Image as ImageIcon, Code, Layers, BookOpen,
   Send, LogOut, User, Wand2, ChevronDown
 } from "lucide-react";
-
 
 type Mode = "text" | "image" | "code" | "picmix";
 
@@ -27,22 +26,31 @@ export function Generator() {
   const [codeLang, setCodeLang] = useState("javascript");
   const [imageType, setImageType] = useState("digital-art");
   const [showStyleDropdown, setShowStyleDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const currentStyleOptions = mode === "text" ? textStyles : mode === "code" ? codeLanguages : imageTypes;
   const currentStyle = mode === "text" ? textStyle : mode === "code" ? codeLang : imageType;
   const setCurrentStyle = mode === "text" ? setTextStyle : mode === "code" ? setCodeLang : setImageType;
   const currentStyleLabel = currentStyleOptions.find(s => s.value === currentStyle)?.label || currentStyle;
 
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowStyleDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const FUNC_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate`;
 
   const handleGenerate = useCallback(async () => {
     if (!prompt.trim() || mode === "picmix") return;
-
-    // Save prompt if user logged in
     if (user) {
       savePrompt({ userId: user.id, text: prompt, category: mode as "text" | "image" | "code" });
     }
-
     setLoading(true);
     setContent("");
     setIsStreaming(false);
@@ -75,7 +83,6 @@ export function Generator() {
           throw new Error("No image generated");
         }
       } else {
-        // Stream text/code
         if (!resp.body) throw new Error("No response body");
         setIsStreaming(true);
         const reader = resp.body.getReader();
@@ -114,7 +121,7 @@ export function Generator() {
     } finally {
       setLoading(false);
     }
-  }, [prompt, mode, user, FUNC_URL]);
+  }, [prompt, mode, user, FUNC_URL, currentStyle]);
 
   const handlePromptSelect = (text: string, category: "text" | "image" | "code") => {
     setPrompt(text + " ");
@@ -168,7 +175,7 @@ export function Generator() {
           {modes.map((m) => (
             <button
               key={m.key}
-              onClick={() => setMode(m.key)}
+              onClick={() => { setMode(m.key); setShowStyleDropdown(false); }}
               className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${
                 mode === m.key
                   ? "btn-glow"
@@ -183,10 +190,10 @@ export function Generator() {
         {/* Input Area */}
         {mode !== "picmix" && (
           <div className="glass rounded-2xl p-4 space-y-3">
-            {/* Style selector */}
-            <div className="relative inline-block mb-1">
+            {/* Style Selector Dropdown */}
+            <div ref={dropdownRef} className="relative inline-block">
               <label className="block text-xs text-muted-foreground mb-1.5 font-medium">
-                {mode === "text" ? "Text Style" : mode === "code" ? "Language" : "Image Style"}
+                {mode === "text" ? "📝 Text Style" : mode === "code" ? "💻 Language" : "🎨 Image Style"}
               </label>
               <button
                 onClick={() => setShowStyleDropdown(!showStyleDropdown)}
@@ -196,7 +203,7 @@ export function Generator() {
                 <ChevronDown className={`h-4 w-4 transition-transform ${showStyleDropdown ? "rotate-180" : ""}`} />
               </button>
               {showStyleDropdown && (
-                <div className="absolute top-full left-0 mt-1 z-50 w-60 max-h-56 overflow-y-auto rounded-xl border border-border bg-popover shadow-xl">
+                <div className="absolute top-full left-0 mt-1 z-50 w-64 max-h-60 overflow-y-auto rounded-xl border border-border bg-popover shadow-xl">
                   {currentStyleOptions.map((opt) => (
                     <button
                       key={opt.value}
@@ -213,6 +220,8 @@ export function Generator() {
                 </div>
               )}
             </div>
+
+            {/* Prompt Input */}
             <div className="flex items-start gap-3">
               <div className="flex-1">
                 <textarea
