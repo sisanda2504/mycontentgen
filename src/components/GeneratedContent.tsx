@@ -43,10 +43,10 @@ export function GeneratedContent({ type, content, isStreaming }: GeneratedConten
   const shareText = encodeURIComponent(caption || "Check out what I created with GenMix! 🚀");
 
   const socialLinks = [
-    { icon: Twitter, href: `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`, label: "Twitter" },
-    { icon: Facebook, href: `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${shareText}`, label: "Facebook" },
-    { icon: Linkedin, href: `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`, label: "LinkedIn" },
-    { icon: Instagram, href: "#", label: "Instagram" },
+    { icon: Twitter, key: "twitter", label: "Twitter" },
+    { icon: Facebook, key: "facebook", label: "Facebook" },
+    { icon: Linkedin, key: "linkedin", label: "LinkedIn" },
+    { icon: Instagram, key: "instagram", label: "Instagram" },
   ];
 
   const renderContent = () => {
