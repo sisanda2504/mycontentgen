@@ -9,20 +9,24 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages, mode, model } = await req.json();
+    const { messages, mode, style } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     let systemPrompt = "You are a helpful AI assistant.";
-    let useModel = model || "google/gemini-3-flash-preview";
+    let useModel = "google/gemini-3-flash-preview";
     const isImageGen = mode === "image";
     
     if (mode === "text") {
-      systemPrompt = "You are a creative content writer. Produce high-quality, engaging content. Use markdown formatting where appropriate.";
+      systemPrompt = `You are a creative content writer. Produce high-quality, engaging content in the style of a "${style || "blog-post"}". Use markdown formatting where appropriate.`;
     } else if (mode === "code") {
-      systemPrompt = "You are an expert programmer. Write clean, well-commented code. Always wrap code in appropriate markdown code blocks with language tags.";
+      systemPrompt = `You are an expert programmer. Write clean, well-commented code strictly in ${style || "javascript"}. Always wrap code in appropriate markdown code blocks with the correct language tag. Do not use any other programming language unless explicitly asked.`;
     } else if (mode === "image") {
       useModel = "google/gemini-2.5-flash-image";
+      // Prepend style to the user message
+      if (style && messages?.length) {
+        messages[0].content = `${style} style: ${messages[0].content}`;
+      }
     }
 
     const body: Record<string, unknown> = {
