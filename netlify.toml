@@ -1,9 +1,9 @@
 [build]
   publish = "dist/client"
-  command = "npm run build"
+  command = "npm run build -- --config vite.config.mjs"
 
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "20"
 
 [[redirects]]
   from = "/*"

@@ -6,13 +6,4 @@
 // You can pass additional config via defineConfig({ vite: { ... } }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
-export default defineConfig({
-  tanstack: {
-    // Disable server-side rendering for static deployment
-    ssr: false,
-    prerender: {
-      routes: ['/'],
-      enabled: true
-    }
-  }
-});
+export default defineConfig();
