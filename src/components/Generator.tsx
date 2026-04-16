@@ -184,23 +184,30 @@ export function Generator() {
         {mode !== "picmix" && (
           <div className="glass rounded-2xl p-4 space-y-3">
             {/* Style selector */}
-            <div className="relative inline-block">
+            <div className="relative inline-block mb-1">
+              <label className="block text-xs text-muted-foreground mb-1.5 font-medium">
+                {mode === "text" ? "Text Style" : mode === "code" ? "Language" : "Image Style"}
+              </label>
               <button
                 onClick={() => setShowStyleDropdown(!showStyleDropdown)}
-                className="flex items-center gap-2 rounded-xl bg-secondary px-4 py-2.5 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors border border-border/50"
+                className="flex items-center gap-2 rounded-lg border border-primary/40 bg-primary/10 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/20 transition-colors"
               >
-                {currentStyleLabel.replace(/^[^\s]+\s/, "")}
+                {currentStyleLabel}
                 <ChevronDown className={`h-4 w-4 transition-transform ${showStyleDropdown ? "rotate-180" : ""}`} />
               </button>
               {showStyleDropdown && (
-                <div className="absolute top-full left-0 mt-1 z-50 w-56 max-h-52 overflow-y-auto rounded-xl bg-card border border-border shadow-lg">
-                  {currentStyleOptions.filter(o => o.value !== currentStyle).map((opt) => (
+                <div className="absolute top-full left-0 mt-1 z-50 w-60 max-h-56 overflow-y-auto rounded-xl border border-border bg-popover shadow-xl">
+                  {currentStyleOptions.map((opt) => (
                     <button
                       key={opt.value}
                       onClick={() => { setCurrentStyle(opt.value); setShowStyleDropdown(false); }}
-                      className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-secondary/60 transition-colors"
+                      className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                        currentStyle === opt.value
+                          ? "bg-primary/20 text-primary font-medium"
+                          : "text-popover-foreground hover:bg-accent"
+                      }`}
                     >
-                      {opt.label.replace(/^[^\s]+\s/, "")}
+                      {opt.label}
                     </button>
                   ))}
                 </div>
