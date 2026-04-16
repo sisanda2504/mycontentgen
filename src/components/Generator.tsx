@@ -5,9 +5,10 @@ import { GeneratedContent, LoadingAnimation } from "./GeneratedContent";
 import { PromptLibraryPanel } from "./PromptLibrary";
 import { PicMix } from "./PicMix";
 import { savePrompt } from "@/lib/auth";
+import { textStyles, codeLanguages, imageTypes } from "@/lib/style-options";
 import {
   Sparkles, FileText, Image as ImageIcon, Code, Layers, BookOpen,
-  Send, LogOut, User, Wand2
+  Send, LogOut, User, Wand2, ChevronDown
 } from "lucide-react";
 
 
