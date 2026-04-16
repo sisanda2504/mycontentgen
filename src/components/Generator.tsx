@@ -23,6 +23,15 @@ export function Generator() {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [textStyle, setTextStyle] = useState("blog-post");
+  const [codeLang, setCodeLang] = useState("javascript");
+  const [imageType, setImageType] = useState("digital-art");
+  const [showStyleDropdown, setShowStyleDropdown] = useState(false);
+
+  const currentStyleOptions = mode === "text" ? textStyles : mode === "code" ? codeLanguages : imageTypes;
+  const currentStyle = mode === "text" ? textStyle : mode === "code" ? codeLang : imageType;
+  const setCurrentStyle = mode === "text" ? setTextStyle : mode === "code" ? setCodeLang : setImageType;
+  const currentStyleLabel = currentStyleOptions.find(s => s.value === currentStyle)?.label || currentStyle;
 
   const FUNC_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate`;
 
