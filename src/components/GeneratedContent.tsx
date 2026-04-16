@@ -10,6 +10,7 @@ interface GeneratedContentProps {
 export function GeneratedContent({ type, content, isStreaming }: GeneratedContentProps) {
   const [copied, setCopied] = useState(false);
   const [caption, setCaption] = useState("");
+  const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   if (!content && !isStreaming) return null;
@@ -38,15 +39,28 @@ export function GeneratedContent({ type, content, isStreaming }: GeneratedConten
     }
   };
 
-  const shareUrl = encodeURIComponent(window.location.href);
-  const shareText = encodeURIComponent(caption || "Check out what I created with GenMix! 🚀");
-
-  const socialLinks = [
-    { icon: Twitter, href: `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`, label: "Twitter" },
-    { icon: Facebook, href: `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${shareText}`, label: "Facebook" },
-    { icon: Linkedin, href: `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`, label: "LinkedIn" },
-    { icon: Instagram, href: "#", label: "Instagram" },
+  const socialPlatforms = [
+    { icon: Twitter, key: "twitter", label: "Twitter" },
+    { icon: Facebook, key: "facebook", label: "Facebook" },
+    { icon: Linkedin, key: "linkedin", label: "LinkedIn" },
+    { icon: Instagram, key: "instagram", label: "Instagram" },
   ];
+
+  const handleShare = () => {
+    if (!selectedPlatform) return;
+    const shareUrl = encodeURIComponent(window.location.href);
+    const shareText = encodeURIComponent(caption || "Check out what I created with GenMix! 🚀");
+
+    const urls: Record<string, string> = {
+      twitter: `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${shareText}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`,
+      instagram: `https://www.instagram.com/`,
+    };
+
+    const url = urls[selectedPlatform];
+    if (url) window.open(url, "_blank", "noopener,noreferrer");
+  };
 
   const renderContent = () => {
     if (type === "image" && content.startsWith("data:")) {
@@ -59,7 +73,6 @@ export function GeneratedContent({ type, content, isStreaming }: GeneratedConten
         </pre>
       );
     }
-    // Text with basic markdown rendering
     return (
       <div ref={contentRef} className="prose prose-invert max-w-none text-foreground whitespace-pre-wrap leading-relaxed">
         {content}
@@ -89,34 +102,45 @@ export function GeneratedContent({ type, content, isStreaming }: GeneratedConten
       <div className="border-t border-border pt-4 space-y-3">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Share2 className="h-4 w-4" />
-          <span className="font-medium">Share</span>
+          <span className="font-medium">Share to</span>
         </div>
-        <div className="flex gap-2 items-center">
-          <input
-            type="text"
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            placeholder="Write a caption or comment..."
-            className="flex-1 rounded-xl bg-input px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-          />
-          <button className="btn-glow rounded-xl px-4 py-2.5 flex items-center gap-1.5 text-sm">
-            <Send className="h-4 w-4" /> Send
-          </button>
-        </div>
+
+        {/* Step 1: Select Platform */}
         <div className="flex gap-3">
-          {socialLinks.map((s) => (
-            <a
-              key={s.label}
-              href={s.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-muted-foreground hover:text-primary hover:bg-secondary/80 transition-colors"
+          {socialPlatforms.map((s) => (
+            <button
+              key={s.key}
+              onClick={() => setSelectedPlatform(selectedPlatform === s.key ? null : s.key)}
+              className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
+                selectedPlatform === s.key
+                  ? "bg-primary text-primary-foreground ring-2 ring-primary/50"
+                  : "bg-secondary text-muted-foreground hover:text-primary hover:bg-secondary/80"
+              }`}
               title={s.label}
             >
               <s.icon className="h-5 w-5" />
-            </a>
+            </button>
           ))}
         </div>
+
+        {/* Step 2: Write message & share (shown after selecting platform) */}
+        {selectedPlatform && (
+          <div className="flex gap-2 items-center animate-fade-up">
+            <input
+              type="text"
+              value={caption}
+              onChange={(e) => setCaption(e.target.value)}
+              placeholder={`Write a message for ${socialPlatforms.find(p => p.key === selectedPlatform)?.label}...`}
+              className="flex-1 rounded-xl bg-input px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+            />
+            <button
+              onClick={handleShare}
+              className="btn-glow rounded-xl px-4 py-2.5 flex items-center gap-1.5 text-sm"
+            >
+              <Send className="h-4 w-4" /> Share
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
