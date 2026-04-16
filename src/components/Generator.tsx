@@ -5,9 +5,10 @@ import { GeneratedContent, LoadingAnimation } from "./GeneratedContent";
 import { PromptLibraryPanel } from "./PromptLibrary";
 import { PicMix } from "./PicMix";
 import { savePrompt } from "@/lib/auth";
+import { textStyles, codeLanguages, imageTypes } from "@/lib/style-options";
 import {
   Sparkles, FileText, Image as ImageIcon, Code, Layers, BookOpen,
-  Send, LogOut, User, Wand2
+  Send, LogOut, User, Wand2, ChevronDown
 } from "lucide-react";
 
 
@@ -22,6 +23,15 @@ export function Generator() {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [textStyle, setTextStyle] = useState("blog-post");
+  const [codeLang, setCodeLang] = useState("javascript");
+  const [imageType, setImageType] = useState("digital-art");
+  const [showStyleDropdown, setShowStyleDropdown] = useState(false);
+
+  const currentStyleOptions = mode === "text" ? textStyles : mode === "code" ? codeLanguages : imageTypes;
+  const currentStyle = mode === "text" ? textStyle : mode === "code" ? codeLang : imageType;
+  const setCurrentStyle = mode === "text" ? setTextStyle : mode === "code" ? setCodeLang : setImageType;
+  const currentStyleLabel = currentStyleOptions.find(s => s.value === currentStyle)?.label || currentStyle;
 
   const FUNC_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate`;
 
@@ -47,6 +57,7 @@ export function Generator() {
         body: JSON.stringify({
           messages: [{ role: "user", content: prompt }],
           mode,
+          style: currentStyle,
         }),
       });
 
@@ -172,6 +183,31 @@ export function Generator() {
         {/* Input Area */}
         {mode !== "picmix" && (
           <div className="glass rounded-2xl p-4 space-y-3">
+            {/* Style selector */}
+            <div className="relative">
+              <button
+                onClick={() => setShowStyleDropdown(!showStyleDropdown)}
+                className="flex items-center gap-2 rounded-xl bg-secondary px-4 py-2 text-sm text-secondary-foreground hover:bg-secondary/80 transition-colors"
+              >
+                {currentStyleLabel}
+                <ChevronDown className={`h-4 w-4 transition-transform ${showStyleDropdown ? "rotate-180" : ""}`} />
+              </button>
+              {showStyleDropdown && (
+                <div className="absolute top-full left-0 mt-1 z-20 w-64 max-h-60 overflow-y-auto rounded-xl bg-card border border-border shadow-lg">
+                  {currentStyleOptions.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => { setCurrentStyle(opt.value); setShowStyleDropdown(false); }}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-secondary transition-colors ${
+                        currentStyle === opt.value ? "bg-primary/20 text-primary" : "text-foreground"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <div className="flex items-start gap-3">
               <div className="flex-1">
                 <textarea
