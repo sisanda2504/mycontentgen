@@ -143,7 +143,6 @@ export function GeneratedContent({ type, content, isStreaming }: GeneratedConten
         )}
       </div>
     </div>
-    </div>
   );
 }
 
