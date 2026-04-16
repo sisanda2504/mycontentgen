@@ -9,7 +9,6 @@ import {
   Sparkles, FileText, Image as ImageIcon, Code, Layers, BookOpen,
   Send, LogOut, User, Wand2
 } from "lucide-react";
-import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL!,
