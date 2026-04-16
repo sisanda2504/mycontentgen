@@ -10,10 +10,6 @@ import {
   Send, LogOut, User, Wand2
 } from "lucide-react";
 
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL!,
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY!
-);
 
 type Mode = "text" | "image" | "code" | "picmix";
 
