@@ -37,6 +37,8 @@ export const Route = createRootRoute({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "GenMix — AI Content Generator" },
+      { name: "twitter:description", content: "Create text, images, and code with AI. Mix pictures with PicMix." },
     ],
     links: [
       {
